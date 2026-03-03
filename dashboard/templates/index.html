@@ -433,7 +433,7 @@
             <div class="logo">🚕</div>
             <div>
                 <h1>Taxi Demand Forecasting</h1>
-                <div class="sub">Агрегатор такси • ML пайплайн</div>
+                <div class="sub">Прогноз спроса • ML пайплайн</div>
             </div>
         </div>
         <div class="hdr-right">
@@ -464,6 +464,16 @@
                 <div class="lbl">LightGBM MAPE</div>
                 <div class="val" style="color:var(--grn)" id="vMape">—</div>
                 <div class="hint">Процент от факта</div>
+            </div>
+            <div class="mc">
+                <div class="lbl">Baseline MAE</div>
+                <div class="val" style="color:var(--red)" id="vPMae">—</div>
+                <div class="hint">Сезонный baseline</div>
+            </div>
+            <div class="mc">
+                <div class="lbl">Baseline MAPE</div>
+                <div class="val" style="color:var(--red)" id="vPMape">—</div>
+                <div class="hint">Сравнение с LightGBM</div>
             </div>
             <div class="mc">
                 <div class="lbl">Районы города</div>
@@ -592,6 +602,10 @@
                 $('vMae').textContent = metrics.lgbm_overall.mae;
                 $('vMape').textContent = metrics.lgbm_overall.mape + '%';
             }
+            if (metrics.prophet_overall) {
+                $('vPMae').textContent = metrics.prophet_overall.mae;
+                $('vPMape').textContent = metrics.prophet_overall.mape + '%';
+            }
             $('vZones').textContent = zones.length;
 
             updateMode();
@@ -716,11 +730,17 @@
                 futP[pL.length - 1] = data.past.lgbm[data.past.lgbm.length - 1];
             }
 
+            const showBoth = $('modelSel').value === 'both';
+            const prophet = [...(data.past.prophet || []), ...new Array(fL.length).fill(null)];
+
             const ds = [
                 { label: 'Факт', data: actual, borderColor: '#fff', backgroundColor: 'rgba(255,255,255,.05)', borderWidth: 2, pointRadius: 0, fill: true, tension: .3 },
                 { label: 'LightGBM', data: lgbm, borderColor: '#fce000', borderWidth: 2.5, pointRadius: 0, tension: .3 },
                 { label: 'Прогноз', data: futP, borderColor: '#0a84ff', backgroundColor: 'rgba(10,132,255,.1)', borderWidth: 2.5, borderDash: [6, 4], pointRadius: 0, tension: .3, fill: true }
             ];
+            if (showBoth && prophet.some(v => v !== null)) {
+                ds.push({ label: 'Baseline (Seasonal)', data: prophet, borderColor: '#fa4248', borderWidth: 1.5, borderDash: [4, 3], pointRadius: 0, tension: .3 });
+            }
 
             const bi = data.boundary_idx || pL.length;
 
