@@ -1,4 +1,5 @@
 # 🚕 Taxi Demand Forecasting
+*[🇷🇺 Читать на русском языке (Russian version below)](#-прогнозирование-спроса-на-такси)*
 
 **Predict hourly taxi demand across 20 city zones** using gradient boosting (LightGBM) with a seasonal baseline comparison. Includes an interactive dark-themed dashboard with historical analysis and 30-day future forecasting.
 
@@ -10,10 +11,10 @@
 
 ## 📸 Dashboard
 
-### Тепловая карта и метрики
+### Heatmap & Metrics
 ![Dashboard Main](assets/dashboard_main.png)
 
-### Графики: Факт vs Прогноз, распределение ошибок, почасовой спрос
+### Charts: Fact vs Forecast, Error Distribution, Hourly Demand
 ![Dashboard Charts](assets/dashboard_charts.png)
 
 ---
@@ -96,4 +97,80 @@ python dashboard/app.py
 
 ---
 
-*Built as a portfolio project demonstrating time-series forecasting, feature engineering, and full-stack ML dashboard development.*
+# 🇷🇺 Прогнозирование спроса на такси
+
+**Прогноз почасового спроса на такси в 20 зонах города** с использованием градиентного бустинга (LightGBM) и сравнением с сезонным бейзлайном. Включает интерактивный дашборд в тёмной теме для анализа исторического спроса и прогноза на 30 дней вперёд.
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![LightGBM](https://img.shields.io/badge/LightGBM-4.0+-green)
+![FastAPI](https://img.shields.io/badge/FastAPI-Дашборд-009688)
+
+---
+
+## 📸 Дашборд
+
+### Тепловая карта и метрики
+![Dashboard Main](assets/dashboard_main.png)
+
+### Графики: Факт vs Прогноз, распределение ошибок, спрос по часам
+![Dashboard Charts](assets/dashboard_charts.png)
+
+---
+
+## 📋 Описание задачи
+
+На основе исторических данных о заказах такси по **20 зонам города**, а также погодных условий, праздников и временных паттернов:
+- **Предсказать** количество заказов в каждой зоне на каждый час
+- **Сделать прогноз** на 30 дней вперёд с использованием rolling-метода
+- **Сравнить** LightGBM с наивным сезонным бейзлайном
+- **Визуализировать** результаты на интерактивном дашборде
+
+## 📈 Результаты
+
+| Модель | MAE | MAPE |
+|--------|-----|------|
+| **LightGBM** | **1.13** | **8.5%** |
+| Сезонный Baseline | 1.81 | 9.1% |
+
+LightGBM превосходит почасовой сезонный бейзлайн, доказывая эффективность созданных 45 комплексных признаков (лаги, погода, моментум спроса).
+
+## 🚀 Быстрый старт
+
+```bash
+# 1. Загрузите зависимости
+pip install -r requirements.txt
+
+# 2. Запустите полный пайплайн
+python data/generate_data.py          # Генерация синтетических данных (~175к строк)
+python src/features.py                # Создание 45 признаков (Feature Engineering)
+python src/train_lightgbm.py          # Обучение модели LightGBM
+python src/evaluate.py                # Расчёт метрик (MAE, MAPE)
+python src/forecast_future.py --days 30  # Прогноз на 30 дней вперёд
+
+# 3. Запуск дашборда
+python dashboard/app.py
+# Откройте http://localhost:8050
+```
+
+## 📊 Feature Engineering (45 признаков)
+
+| Категория | Признаки |
+|-----------|----------|
+| **Лаги (Lags)** | 1ч, 2ч, 3ч, 6ч, 12ч, 24ч, 48ч, 168ч |
+| **Скользящие (Rolling)** | Среднее и ст. отклонение (Mean/Std) за 3ч, 6ч, 12ч, 24ч |
+| **Циклические** | sin/cos кодирование часа, дня недели, месяца |
+| **Флаги** | Час пик, ночь, выходной, праздник |
+| **Погода** | Температура, осадки, скорость ветра, влияние плохой погоды в час пик |
+| **Зоны** | Средний спрос в зоне, час пика в зоне, отношение к среднему спросу |
+
+## 🖥️ Функции дашборда
+
+- **Тепловая карта (Heatmap)** — интенсивность спроса по районам для любого часа
+- **Временной слайдер** — переключение часов в рамках выбранных суток
+- **График временного ряда** — факт против прогноза (с границей между историей и будущим)
+- **Распределение ошибок** — гистограмма, показывающая смещение и точность предсказаний
+- **Даты** — удобная группировка дат на "Историю (с фактом)" и "Будущее (Прогноз)"
+- **Выбор модели** — наглядное сравнение работы LightGBM и Сезонного бейзлайна
+
+---
+*Pet-проект, демонстрирующий полный ML-цикл: от генерации данных и feature engineering до обучения моделей (Time-Series) и создания full-stack дашборда на FastAPI.*
