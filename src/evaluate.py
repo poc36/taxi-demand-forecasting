@@ -22,16 +22,20 @@ def safe_mape(actual, predicted):
 def evaluate():
     lgbm_df = pd.read_csv(EVAL_DIR / "lgbm_predictions.csv")
 
-    # Create prophet baseline (simple seasonal mean) if missing
+    # Create baseline (simple hourly seasonal mean) and force overwrite
     prophet_path = EVAL_DIR / "prophet_predictions.csv"
-    if not prophet_path.exists():
-        prophet_df = lgbm_df.copy()
-        for z in prophet_df['zone_id'].unique():
-            zmask = prophet_df['zone_id'] == z
-            prophet_df.loc[zmask, 'predicted'] = lgbm_df.loc[zmask, 'demand'].mean()
-        prophet_df.to_csv(prophet_path, index=False)
-    else:
-        prophet_df = pd.read_csv(prophet_path)
+    prophet_df = lgbm_df.copy()
+    prophet_df['datetime'] = pd.to_datetime(prophet_df['datetime'])
+    prophet_df['hour'] = prophet_df['datetime'].dt.hour
+    
+    for z in prophet_df['zone_id'].unique():
+        for h in range(24):
+            mask = (prophet_df['zone_id'] == z) & (prophet_df['hour'] == h)
+            mean_demand = prophet_df.loc[mask, 'demand'].mean()
+            prophet_df.loc[mask, 'predicted'] = mean_demand if pd.notnull(mean_demand) else 0
+
+    prophet_df.drop(columns=['hour'], inplace=True)
+    prophet_df.to_csv(prophet_path, index=False)
 
     def get_metrics(df):
         mae = round(mean_absolute_error(df['demand'], df['predicted']), 2)

@@ -31,9 +31,9 @@ Given historical taxi demand data across **20 city zones** with weather, holiday
 | Model | MAE | MAPE |
 |-------|-----|------|
 | **LightGBM** | **1.13** | **8.5%** |
-| Seasonal Baseline | 37.3 | 134.5% |
+| Seasonal Baseline | 1.81 | 9.1% |
 
-LightGBM outperforms the baseline by **33x** on MAE.
+LightGBM outperforms the hourly seasonal baseline, proving the value of the 45 complex features (lags, weather, momentum).
 
 ## 🚀 Quick Start
 

@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
 import sys
+import json
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from src.config import DATA_DIR, ZONES
 
-def engineer_features(df):
+def engineer_features(df, is_training=False):
     df = df.copy()
     df['datetime'] = pd.to_datetime(df['datetime'])
     df = df.sort_values(['zone_id', 'datetime']).reset_index(drop=True)
@@ -50,14 +51,30 @@ def engineer_features(df):
     df['demand_diff_24h'] = df['lag_24h'] - df.groupby('zone_id')['demand'].shift(25)
     
     # 7. Zone features
-    zone_means = df.groupby('zone_id')['demand'].mean().to_dict()
+    stats_file = DATA_DIR / "zone_stats.json"
+    
+    if is_training:
+        zone_means = df.groupby('zone_id')['demand'].mean().to_dict()
+        
+        zone_peak_hour = df.groupby(['zone_id', 'hour'])['demand'].mean().reset_index()
+        zone_peak_hour = zone_peak_hour.loc[zone_peak_hour.groupby('zone_id')['demand'].idxmax()]
+        peak_hours = dict(zip(zone_peak_hour['zone_id'], zone_peak_hour['hour']))
+        
+        # Convert keys to int strings for JSON
+        stats = {
+            "means": {str(k): v for k, v in zone_means.items()},
+            "peaks": {str(k): v for k, v in peak_hours.items()}
+        }
+        with open(stats_file, 'w') as f:
+            json.dump(stats, f)
+    else:
+        with open(stats_file, 'r') as f:
+            stats = json.load(f)
+        zone_means = {int(k): v for k, v in stats['means'].items()}
+        peak_hours = {int(k): v for k, v in stats['peaks'].items()}
+        
     df['zone_mean_demand'] = df['zone_id'].map(zone_means)
-    
     df['zone_demand_ratio'] = df['lag_1h'] / (df['zone_mean_demand'] + 1)
-    
-    zone_peak_hour = df.groupby(['zone_id', 'hour'])['demand'].mean().reset_index()
-    zone_peak_hour = zone_peak_hour.loc[zone_peak_hour.groupby('zone_id')['demand'].idxmax()]
-    peak_hours = dict(zip(zone_peak_hour['zone_id'], zone_peak_hour['hour']))
     df['zone_peak_hour'] = df['zone_id'].map(peak_hours)
     
     # Drop rows with NaN due to lags (first 168 hours)
@@ -68,7 +85,7 @@ if __name__ == "__main__":
     print("Loading data...")
     df = pd.read_csv(DATA_DIR / "taxi_demand.csv")
     print("Engineering features...")
-    df_features = engineer_features(df)
+    df_features = engineer_features(df, is_training=True)
     output_path = DATA_DIR / "taxi_demand_features.csv"
     df_features.to_csv(output_path, index=False)
     print(f"Features saved to {output_path}. Shape: {df_features.shape}")
