@@ -1,11 +1,11 @@
 {
   "lgbm_overall": {
-    "mae": 7.84,
-    "mape": 38.3
+    "mae": 1.13,
+    "mape": 8.5
   },
   "prophet_overall": {
-    "mae": 37.28,
-    "mape": 295.8
+    "mae": 37.3,
+    "mape": 134.5
   },
   "per_zone": [
     {
@@ -13,8 +13,8 @@
       "zone_name": "Центр-Кремль",
       "zone_type": "center",
       "lgbm": {
-        "mae": 15.52,
-        "mape": 7.8
+        "mae": 2.59,
+        "mape": 5.4
       },
       "prophet": {
         "mae": 120.86,
@@ -26,8 +26,8 @@
       "zone_name": "Центр-Арбат",
       "zone_type": "center",
       "lgbm": {
-        "mae": 16.14,
-        "mape": 8.3
+        "mae": 2.52,
+        "mape": 5.7
       },
       "prophet": {
         "mae": 118.82,
@@ -39,8 +39,8 @@
       "zone_name": "Москва-Сити",
       "zone_type": "business",
       "lgbm": {
-        "mae": 6.69,
-        "mape": 19.1
+        "mae": 1.23,
+        "mape": 10.9
       },
       "prophet": {
         "mae": 21.08,
@@ -52,8 +52,8 @@
       "zone_name": "Тверская",
       "zone_type": "business",
       "lgbm": {
-        "mae": 2.69,
-        "mape": 21.1
+        "mae": 1.02,
+        "mape": 11.6
       },
       "prophet": {
         "mae": 8.27,
@@ -65,8 +65,8 @@
       "zone_name": "Хамовники",
       "zone_type": "residential",
       "lgbm": {
-        "mae": 6.51,
-        "mape": 21.3
+        "mae": 0.69,
+        "mape": 9.2
       },
       "prophet": {
         "mae": 24.43,
@@ -78,12 +78,12 @@
       "zone_name": "Замоскворечье",
       "zone_type": "residential",
       "lgbm": {
-        "mae": 7.19,
-        "mape": 26.4
+        "mae": 0.57,
+        "mape": 9.0
       },
       "prophet": {
         "mae": 26.65,
-        "mape": 117.5
+        "mape": 109.0
       }
     },
     {
@@ -91,12 +91,12 @@
       "zone_name": "Таганка",
       "zone_type": "residential",
       "lgbm": {
-        "mae": 1.08,
-        "mape": 26.3
+        "mae": 0.53,
+        "mape": 10.1
       },
       "prophet": {
-        "mae": 3.46,
-        "mape": 100.4
+        "mae": 3.47,
+        "mape": 95.3
       }
     },
     {
@@ -104,12 +104,12 @@
       "zone_name": "Пресня",
       "zone_type": "residential",
       "lgbm": {
-        "mae": 7.14,
-        "mape": 28.6
+        "mae": 0.84,
+        "mape": 8.0
       },
       "prophet": {
         "mae": 26.62,
-        "mape": 122.6
+        "mape": 97.7
       }
     },
     {
@@ -117,12 +117,12 @@
       "zone_name": "Сокольники",
       "zone_type": "residential",
       "lgbm": {
-        "mae": 1.23,
-        "mape": 21.2
+        "mae": 0.47,
+        "mape": 9.6
       },
       "prophet": {
         "mae": 4.13,
-        "mape": 92.8
+        "mape": 90.6
       }
     },
     {
@@ -130,12 +130,12 @@
       "zone_name": "Марьино",
       "zone_type": "suburb",
       "lgbm": {
-        "mae": 3.28,
-        "mape": 54.8
+        "mae": 0.42,
+        "mape": 11.2
       },
       "prophet": {
-        "mae": 11.32,
-        "mape": 243.9
+        "mae": 11.35,
+        "mape": 170.4
       }
     },
     {
@@ -143,12 +143,12 @@
       "zone_name": "Бутово",
       "zone_type": "suburb",
       "lgbm": {
-        "mae": 5.54,
-        "mape": 64.2
+        "mae": 0.41,
+        "mape": 12.1
       },
       "prophet": {
-        "mae": 18.14,
-        "mape": 258.5
+        "mae": 18.17,
+        "mape": 160.1
       }
     },
     {
@@ -156,12 +156,12 @@
       "zone_name": "Митино",
       "zone_type": "suburb",
       "lgbm": {
-        "mae": 4.46,
-        "mape": 56.0
+        "mae": 0.35,
+        "mape": 11.9
       },
       "prophet": {
-        "mae": 15.36,
-        "mape": 221.3
+        "mae": 15.39,
+        "mape": 143.1
       }
     },
     {
@@ -169,12 +169,12 @@
       "zone_name": "Жулебино",
       "zone_type": "suburb",
       "lgbm": {
-        "mae": 4.52,
-        "mape": 55.1
+        "mae": 0.31,
+        "mape": 10.9
       },
       "prophet": {
-        "mae": 15.47,
-        "mape": 249.7
+        "mae": 15.5,
+        "mape": 173.9
       }
     },
     {
@@ -182,12 +182,12 @@
       "zone_name": "Солнцево",
       "zone_type": "suburb",
       "lgbm": {
-        "mae": 1.82,
-        "mape": 40.4
+        "mae": 0.33,
+        "mape": 14.2
       },
       "prophet": {
-        "mae": 5.87,
-        "mape": 162.6
+        "mae": 5.91,
+        "mape": 124.7
       }
     },
     {
@@ -195,8 +195,8 @@
       "zone_name": "Шереметьево",
       "zone_type": "airport",
       "lgbm": {
-        "mae": 9.01,
-        "mape": 14.0
+        "mae": 2.29,
+        "mape": 5.0
       },
       "prophet": {
         "mae": 18.97,
@@ -208,8 +208,8 @@
       "zone_name": "Домодедово",
       "zone_type": "airport",
       "lgbm": {
-        "mae": 15.22,
-        "mape": 13.6
+        "mae": 2.11,
+        "mape": 5.2
       },
       "prophet": {
         "mae": 34.11,
@@ -221,8 +221,8 @@
       "zone_name": "Внуково",
       "zone_type": "airport",
       "lgbm": {
-        "mae": 11.65,
-        "mape": 13.7
+        "mae": 0.87,
+        "mape": 6.2
       },
       "prophet": {
         "mae": 25.48,
@@ -234,12 +234,12 @@
       "zone_name": "Ленинградский вокзал",
       "zone_type": "station",
       "lgbm": {
-        "mae": 15.74,
-        "mape": 108.4
+        "mae": 1.77,
+        "mape": 5.7
       },
       "prophet": {
-        "mae": 104.52,
-        "mape": 1420.5
+        "mae": 104.57,
+        "mape": 411.6
       }
     },
     {
@@ -247,12 +247,12 @@
       "zone_name": "Казанский вокзал",
       "zone_type": "station",
       "lgbm": {
-        "mae": 5.26,
-        "mape": 50.3
+        "mae": 1.92,
+        "mape": 5.4
       },
       "prophet": {
-        "mae": 33.14,
-        "mape": 708.5
+        "mae": 33.22,
+        "mape": 301.3
       }
     },
     {
@@ -260,12 +260,12 @@
       "zone_name": "Курский вокзал",
       "zone_type": "station",
       "lgbm": {
-        "mae": 16.16,
-        "mape": 116.2
+        "mae": 1.44,
+        "mape": 5.6
       },
       "prophet": {
-        "mae": 108.92,
-        "mape": 1733.3
+        "mae": 108.99,
+        "mape": 376.1
       }
     }
   ]
