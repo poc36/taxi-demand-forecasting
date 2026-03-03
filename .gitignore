@@ -1,0 +1,20 @@
+# Data files (too large for git)
+data/taxi_demand.csv
+data/taxi_demand_features.csv
+
+# Model artifacts
+models/*.pkl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

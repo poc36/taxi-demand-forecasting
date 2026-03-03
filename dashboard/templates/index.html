@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Demand Forecasting</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #000;
+            --bg2: #0a0a0a;
+            --card: #21201f;
+            --hover: #2f2d2c;
+            --brd: rgba(255, 255, 255, .08);
+            --txt: #fff;
+            --txt2: #9e9b98;
+            --txt3: #7a7774;
+            --yel: #fce000;
+            --grn: #00b64f;
+            --red: #fa4248;
+            --blu: #0a84ff;
+            --r: 16px;
+            --rl: 20px;
+            --rs: 8px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh
+        }
+
+        /* Header */
+        .hdr {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, .85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--brd);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .hdr-left {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: var(--yel);
+            color: #000;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold
+        }
+
+        .hdr h1 {
+            font-size: 18px;
+            font-weight: 700
+        }
+
+        .hdr .sub {
+            font-size: 12px;
+            color: var(--txt2);
+            margin-top: 2px
+        }
+
+        .hdr-right {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase
+        }
+
+        .badge.past {
+            background: rgba(0, 182, 79, .15);
+            color: var(--grn)
+        }
+
+        .badge.future {
+            background: rgba(252, 224, 0, .15);
+            color: var(--yel);
+            animation: pulse 2s infinite
+        }
+
+        @keyframes pulse {
+            50% {
+                box-shadow: 0 0 10px 2px rgba(252, 224, 0, .2)
+            }
+        }
+
+        select {
+            background: var(--card);
+            border: 1px solid var(--brd);
+            color: var(--txt);
+            padding: 8px 14px;
+            border-radius: var(--rs);
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--yel)
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--txt3);
+            font-weight: 500
+        }
+
+        /* Main */
+        .main {
+            padding: 20px 28px;
+            max-width: 1600px;
+            margin: 0 auto
+        }
+
+        /* Banner */
+        .banner {
+            display: none;
+            background: var(--card);
+            border-left: 4px solid var(--yel);
+            border-radius: var(--rs);
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px
+        }
+
+        .banner.on {
+            display: flex
+        }
+
+        .banner strong {
+            color: var(--yel)
+        }
+
+        /* Metrics */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px
+        }
+
+        .mc {
+            background: var(--card);
+            border-radius: var(--r);
+            padding: 18px;
+            transition: transform .2s
+        }
+
+        .mc:hover {
+            transform: translateY(-2px)
+        }
+
+        .mc .lbl {
+            font-size: 12px;
+            color: var(--txt2);
+            margin-bottom: 6px;
+            font-weight: 500
+        }
+
+        .mc .val {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .mc .hint {
+            font-size: 11px;
+            color: var(--txt3);
+            margin-top: 3px
+        }
+
+        /* Grid */
+        .g2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+            margin-bottom: 20px
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--rl);
+            overflow: hidden
+        }
+
+        .card-h {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--brd);
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .card-h h2 {
+            font-size: 15px;
+            font-weight: 600
+        }
+
+        .card-b {
+            padding: 20px
+        }
+
+        /* Heatmap */
+        .hgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 6px;
+            padding: 16px
+        }
+
+        .ztile {
+            padding: 14px 10px;
+            border-radius: var(--r);
+            cursor: pointer;
+            position: relative;
+            background: var(--bg2);
+            border: 2px solid transparent;
+            transition: all .15s
+        }
+
+        .ztile:hover {
+            transform: scale(1.03);
+            border-color: var(--brd)
+        }
+
+        .ztile.act {
+            border-color: var(--yel)
+        }
+
+        .ztile .zn {
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px
+        }
+
+        .ztile .zv {
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .ztile .zs {
+            font-size: 10px;
+            margin-top: 3px;
+            opacity: .7
+        }
+
+        .ztile .zt {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 8px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, .5);
+            font-weight: 600
+        }
+
+        .ztile .zf {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            font-size: 8px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(252, 224, 0, .15);
+            color: var(--yel);
+            font-weight: 700
+        }
+
+        /* Slider */
+        .slider {
+            padding: 16px 20px;
+            border-top: 1px solid var(--brd);
+            background: var(--bg2);
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .slider span {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            min-width: 30px;
+            text-align: center
+        }
+
+        input[type=range] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: var(--brd);
+            border-radius: 3px;
+            outline: none
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--yel);
+            cursor: pointer;
+            border: 3px solid #000
+        }
+
+        /* Zone list */
+        .zlist {
+            max-height: 500px;
+            overflow-y: auto
+        }
+
+        .zlist::-webkit-scrollbar {
+            width: 5px
+        }
+
+        .zlist::-webkit-scrollbar-thumb {
+            background: var(--brd);
+            border-radius: 3px
+        }
+
+        .zi {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--brd);
+            cursor: pointer;
+            transition: background .15s
+        }
+
+        .zi:hover {
+            background: var(--hover)
+        }
+
+        .zi.act {
+            background: rgba(252, 224, 0, .05)
+        }
+
+        .zi .zn2 {
+            font-size: 13px;
+            font-weight: 600
+        }
+
+        .zi .zt2 {
+            font-size: 10px;
+            color: var(--txt3);
+            margin-top: 3px
+        }
+
+        .zi .zm {
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            text-align: right
+        }
+
+        .zi .zp {
+            font-size: 10px;
+            color: var(--txt3);
+            text-align: right;
+            margin-top: 3px
+        }
+
+        /* Chart */
+        .cc {
+            position: relative;
+            height: 360px
+        }
+
+        .cc canvas {
+            width: 100% !important
+        }
+
+        @media(max-width:1100px) {
+            .g2 {
+                grid-template-columns: 1fr
+            }
+
+            .main {
+                padding: 14px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hdr">
+        <div class="hdr-left">
+            <div class="logo">🚕</div>
+            <div>
+                <h1>Taxi Demand Forecasting</h1>
+                <div class="sub">Агрегатор такси • ML пайплайн</div>
+            </div>
+        </div>
+        <div class="hdr-right">
+            <div class="badge past" id="badge"><span id="badgeTxt">✓ ИСТОРИЯ — С ФАКТАМИ</span></div>
+            <label>Дата:</label><select id="dateSel"></select>
+            <label>Модель:</label>
+            <select id="modelSel">
+                <option value="lgbm">LightGBM</option>
+                <option value="both">Обе модели</option>
+            </select>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="banner" id="banner">
+            <span style="font-size:20px">🔮</span>
+            <div><strong>Режим прогноза</strong> — показаны предсказания модели на будущее. Реальных данных (факта) ещё
+                нет.</div>
+        </div>
+
+        <div class="metrics">
+            <div class="mc">
+                <div class="lbl">LightGBM MAE</div>
+                <div class="val" id="vMae">—</div>
+                <div class="hint">Средняя абс. ошибка</div>
+            </div>
+            <div class="mc">
+                <div class="lbl">LightGBM MAPE</div>
+                <div class="val" style="color:var(--grn)" id="vMape">—</div>
+                <div class="hint">Процент от факта</div>
+            </div>
+            <div class="mc">
+                <div class="lbl">Районы города</div>
+                <div class="val" id="vZones">20</div>
+                <div class="hint">Активные зоны</div>
+            </div>
+            <div class="mc">
+                <div class="lbl" id="demLbl">Всего заказов (час)</div>
+                <div class="val" style="color:var(--yel)" id="vDem">—</div>
+                <div class="hint" id="demHint">По всем зонам</div>
+            </div>
+        </div>
+
+        <div class="g2">
+            <div class="card">
+                <div class="card-h">
+                    <h2>🗺️ Тепловая карта спроса</h2>
+                    <span id="hmTime"
+                        style="font-size:12px;color:var(--txt3);font-family:'JetBrains Mono',monospace"></span>
+                </div>
+                <div class="hgrid" id="hmGrid">
+                    <div style="padding:40px;color:var(--txt3)">Загрузка...</div>
+                </div>
+                <div class="slider">
+                    <span id="hrLbl">12</span>
+                    <input type="range" id="hrSlider" min="0" max="23" value="12">
+                    <span style="color:var(--txt2)">:00</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-h">
+                    <h2>📋 Метрики по районам</h2>
+                </div>
+                <div class="zlist" id="zList">
+                    <div style="padding:20px;color:var(--txt3)">Загрузка...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px">
+            <div class="card-h">
+                <h2>📈 Факт + Прогноз</h2>
+                <span id="tsZone" style="font-size:14px;font-weight:700;color:var(--yel)"></span>
+            </div>
+            <div class="card-b">
+                <div class="cc" style="height:380px"><canvas id="tsChart"></canvas></div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+            <div class="card">
+                <div class="card-h">
+                    <h2>📊 Распределение ошибок</h2>
+                </div>
+                <div class="card-b">
+                    <div class="cc"><canvas id="errChart"></canvas></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-h">
+                    <h2>🕐 Спрос по часам (Прогноз)</h2>
+                </div>
+                <div class="card-b">
+                    <div class="cc"><canvas id="futChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const S = {
+            pastDates: [], futDates: [], boundary: null,
+            date: null, hour: 12, zone: 1, isFut: false,
+            zones: [], metrics: {}, hmData: []
+        };
+        let tsChart, errChart, futChart;
+
+        const $ = id => document.getElementById(id);
+        const api = async u => { try { const r = await fetch(u); return await r.json(); } catch (e) { console.error('API error:', u, e); return null; } };
+
+        async function init() {
+            console.log('[init] starting...');
+            const [zones, dates, metrics] = await Promise.all([
+                api('/api/zones'), api('/api/dates'), api('/api/metrics')
+            ]);
+            console.log('[init] zones:', zones, 'dates:', dates, 'metrics:', metrics);
+
+            if (!zones || !dates || !metrics) {
+                $('hmGrid').innerHTML = '<div style="padding:20px;color:var(--red)">Ошибка загрузки API</div>';
+                return;
+            }
+
+            S.zones = zones;
+            S.pastDates = dates.past_dates || [];
+            S.futDates = dates.future_dates || [];
+            S.boundary = dates.boundary;
+            S.metrics = metrics;
+
+            // Fill date selector
+            const sel = $('dateSel');
+            sel.innerHTML = '';
+            if (S.pastDates.length) {
+                const g = document.createElement('optgroup');
+                g.label = '📋 ИСТОРИЯ (с фактом)';
+                S.pastDates.forEach(d => g.appendChild(new Option(d, d)));
+                sel.appendChild(g);
+            }
+            if (S.futDates.length) {
+                const g = document.createElement('optgroup');
+                g.label = '🔮 ПРОГНОЗ (будущее)';
+                S.futDates.forEach(d => { const o = new Option(d + ' →', d); o.className = 'future-date'; g.appendChild(o); });
+                sel.appendChild(g);
+            }
+
+            // Default to latest past date
+            if (S.pastDates.length) {
+                sel.value = S.pastDates[S.pastDates.length - 1];
+            } else if (S.futDates.length) {
+                sel.value = S.futDates[0];
+            }
+            S.date = sel.value;
+            console.log('[init] selected date:', S.date);
+
+            // Metrics
+            if (metrics.lgbm_overall) {
+                $('vMae').textContent = metrics.lgbm_overall.mae;
+                $('vMape').textContent = metrics.lgbm_overall.mape + '%';
+            }
+            $('vZones').textContent = zones.length;
+
+            updateMode();
+            renderZoneList();
+            await loadHeatmap();
+            await loadTimeSeries();
+            console.log('[init] done');
+        }
+
+        function updateMode() {
+            S.isFut = S.futDates.includes(S.date);
+            const b = $('badge');
+            b.className = 'badge ' + (S.isFut ? 'future' : 'past');
+            $('badgeTxt').textContent = S.isFut ? '🔮 БУДУЩЕЕ — ПРОГНОЗ' : '✓ ИСТОРИЯ — С ФАКТАМИ';
+            $('banner').className = 'banner ' + (S.isFut ? 'on' : '');
+            $('demLbl').textContent = S.isFut ? 'Прогноз заказов (час)' : 'Всего заказов (час)';
+            $('demHint').textContent = S.isFut ? 'Факта ещё нет' : 'По всем зонам';
+        }
+
+        function renderZoneList() {
+            const el = $('zList');
+            el.innerHTML = '';
+            const pz = S.metrics.per_zone || [];
+            pz.forEach(z => {
+                const types = { center: 'Центр', business: 'Бизнес', residential: 'Жилой', suburb: 'Пригород', airport: 'Аэропорт', station: 'Вокзал' };
+                const d = document.createElement('div');
+                d.className = 'zi' + (z.zone_id === S.zone ? ' act' : '');
+                d.innerHTML = '<div><div class="zn2">' + z.zone_name + '</div><div class="zt2">' + (types[z.zone_type] || z.zone_type) + '</div></div>' +
+                    '<div><div class="zm">MAE: ' + (z.lgbm ? z.lgbm.mae : '—') + '</div><div class="zp">MAPE: ' + (z.lgbm ? z.lgbm.mape + '%' : '—') + '</div></div>';
+                d.onclick = () => { S.zone = z.zone_id; renderZoneList(); loadHeatmap(); loadTimeSeries(); };
+                el.appendChild(d);
+            });
+        }
+
+        function heatCol(t) {
+            t = Math.max(0, Math.min(1, t));
+            if (t < 0.15) return 'rgba(252,224,0,' + (t * 0.4) + ')';
+            if (t < 0.4) return 'rgba(252,224,0,' + (t * 0.7) + ')';
+            return 'rgba(252,224,0,' + t + ')';
+        }
+
+        async function loadHeatmap() {
+            if (!S.date) return;
+            console.log('[heatmap] loading for', S.date, S.hour);
+            const res = await api('/api/heatmap?date=' + S.date + '&hour=' + S.hour);
+            if (!res) return;
+            S.hmData = res.data || [];
+            const isFc = res.is_forecast;
+
+            $('hmTime').textContent = S.date + ' ' + String(S.hour).padStart(2, '0') + ':00' + (isFc ? ' (Прогноз)' : '');
+
+            const grid = $('hmGrid');
+            grid.innerHTML = '';
+
+            if (!S.hmData.length) {
+                grid.innerHTML = '<div style="padding:30px;color:var(--txt3)">Нет данных на эту дату/час</div>';
+                $('vDem').textContent = '0';
+                return;
+            }
+
+            const maxD = Math.max(...S.hmData.map(d => d.predicted), 1);
+            let total = 0;
+            const types = { center: 'Центр', business: 'Бизнес', residential: 'Жилой', suburb: 'Пригород', airport: 'Аэропорт', station: 'Вокзал' };
+
+            S.hmData.forEach(d => {
+                total += d.predicted;
+                const t = d.predicted / maxD;
+                const tile = document.createElement('div');
+                tile.className = 'ztile' + (d.zone_id === S.zone ? ' act' : '');
+                tile.style.background = heatCol(t);
+                const c = t > 0.55 ? '#000' : '#fff';
+                const cs = t > 0.55 ? 'rgba(0,0,0,.6)' : 'rgba(255,255,255,.6)';
+
+                let sub = '';
+                if (d.actual != null) {
+                    const err = d.actual > 0 ? Math.round(Math.abs(d.actual - d.predicted) / d.actual * 100) : 0;
+                    sub = 'факт: ' + Math.round(d.actual) + ' | ош: ' + err + '%';
+                } else {
+                    sub = 'ожидается';
+                }
+
+                tile.innerHTML =
+                    '<div class="zt" style="color:' + c + '">' + (types[d.zone_type] || d.zone_type) + '</div>' +
+                    (isFc ? '<div class="zf">ПРОГНОЗ</div>' : '') +
+                    '<div class="zn" style="color:' + c + '">' + d.zone_name + '</div>' +
+                    '<div class="zv" style="color:' + c + '">' + Math.round(d.predicted) + '</div>' +
+                    '<div class="zs" style="color:' + cs + '">' + sub + '</div>';
+
+                tile.onclick = () => { S.zone = d.zone_id; renderZoneList(); loadHeatmap(); loadTimeSeries(); };
+                grid.appendChild(tile);
+            });
+            $('vDem').textContent = Math.round(total);
+        }
+
+        async function loadTimeSeries() {
+            console.log('[ts] loading for zone', S.zone);
+            const data = await api('/api/timeseries?zone_id=' + S.zone + '&include_future=true');
+            if (!data) return;
+
+            const zoneInfo = S.zones.find(z => z.id === S.zone);
+            $('tsZone').textContent = zoneInfo ? zoneInfo.name : 'Зона ' + S.zone;
+
+            renderMainChart(data);
+            renderErrorChart(data);
+            renderFutureChart(data);
+        }
+
+        function renderMainChart(data) {
+            const ctx = $('tsChart').getContext('2d');
+            if (tsChart) tsChart.destroy();
+
+            const pL = data.past.labels || [];
+            const fL = data.future.labels || [];
+            const allL = [...pL, ...fL];
+
+            const actual = [...(data.past.actual || []), ...new Array(fL.length).fill(null)];
+            const lgbm = [...(data.past.lgbm || []), ...new Array(fL.length).fill(null)];
+            const futP = [...new Array(pL.length).fill(null), ...(data.future.predicted || [])];
+
+            // connect past and future
+            if (pL.length > 0 && fL.length > 0 && data.past.lgbm && data.past.lgbm.length > 0) {
+                futP[pL.length - 1] = data.past.lgbm[data.past.lgbm.length - 1];
+            }
+
+            const ds = [
+                { label: 'Факт', data: actual, borderColor: '#fff', backgroundColor: 'rgba(255,255,255,.05)', borderWidth: 2, pointRadius: 0, fill: true, tension: .3 },
+                { label: 'LightGBM', data: lgbm, borderColor: '#fce000', borderWidth: 2.5, pointRadius: 0, tension: .3 },
+                { label: 'Прогноз', data: futP, borderColor: '#0a84ff', backgroundColor: 'rgba(10,132,255,.1)', borderWidth: 2.5, borderDash: [6, 4], pointRadius: 0, tension: .3, fill: true }
+            ];
+
+            const bi = data.boundary_idx || pL.length;
+
+            tsChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: allL, datasets: ds },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#9e9b98', font: { size: 11 } } },
+                        tooltip: { backgroundColor: '#2f2d2c', titleColor: '#fff', bodyColor: '#9e9b98' },
+                        annotation: {
+                            annotations: {
+                                bnd: {
+                                    type: 'line', xMin: bi - .5, xMax: bi - .5,
+                                    borderColor: '#0a84ff', borderWidth: 2, borderDash: [6, 4],
+                                    label: {
+                                        display: true, content: '← ФАКТ | ПРОГНОЗ →', position: 'start',
+                                        backgroundColor: 'rgba(10,132,255,.2)', color: '#0a84ff',
+                                        font: { size: 10, weight: '700' }, padding: 5
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#7a7774', maxTicksLimit: 14, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } },
+                        y: { ticks: { color: '#7a7774' }, grid: { color: 'rgba(255,255,255,.04)' }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderErrorChart(data) {
+            const ctx = $('errChart').getContext('2d');
+            if (errChart) errChart.destroy();
+
+            const actuals = data.past.actual || [];
+            const preds = data.past.lgbm || [];
+            if (!actuals.length || !preds.length) {
+                errChart = new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false } });
+                return;
+            }
+            const errors = actuals.map((a, i) => Math.round(a - (preds[i] || 0)));
+            const bins = {};
+            const bs = 3;
+            errors.forEach(e => { const b = Math.round(e / bs) * bs; bins[b] = (bins[b] || 0) + 1; });
+            const keys = Object.keys(bins).map(Number).sort((a, b) => a - b);
+
+            errChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: keys.map(String), datasets: [{
+                        label: 'Частота', data: keys.map(k => bins[k]),
+                        backgroundColor: keys.map(k => k >= 0 ? '#00b64f' : '#fa4248'), borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Ошибка (Факт−Прогноз)', color: '#7a7774' }, ticks: { color: '#7a7774' }, grid: { color: 'rgba(255,255,255,.04)' } },
+                        y: { title: { display: true, text: 'Частота', color: '#7a7774' }, ticks: { color: '#7a7774' }, grid: { color: 'rgba(255,255,255,.04)' } }
+                    }
+                }
+            });
+        }
+
+        function renderFutureChart(data) {
+            const ctx = $('futChart').getContext('2d');
+            if (futChart) futChart.destroy();
+
+            const fL = data.future.labels || [];
+            const fP = data.future.predicted || [];
+            if (!fP.length) {
+                futChart = new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false } });
+                return;
+            }
+
+            const hBins = new Array(24).fill(0);
+            const hCnt = new Array(24).fill(0);
+            fL.forEach((l, i) => {
+                const h = parseInt(l.split(' ')[1].split(':')[0]);
+                hBins[h] += fP[i]; hCnt[h]++;
+            });
+            const hAvg = hBins.map((s, h) => hCnt[h] > 0 ? Math.round(s / hCnt[h]) : 0);
+
+            futChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0') + ':00'),
+                    datasets: [{
+                        label: 'Ср. прогноз', data: hAvg,
+                        backgroundColor: hAvg.map((_, h) => (h >= 7 && h <= 9) || (h >= 17 && h <= 19) ? '#fce000' : 'rgba(252,224,0,.3)'),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#7a7774', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } },
+                        y: { ticks: { color: '#7a7774' }, grid: { color: 'rgba(255,255,255,.04)' }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Events
+        $('hrSlider').addEventListener('input', function () {
+            S.hour = parseInt(this.value);
+            $('hrLbl').textContent = String(S.hour).padStart(2, '0');
+            loadHeatmap();
+        });
+        $('dateSel').addEventListener('change', function () {
+            S.date = this.value;
+            updateMode(); loadHeatmap(); loadTimeSeries();
+        });
+        $('modelSel').addEventListener('change', () => loadTimeSeries());
+
+        init();
+    </script>
+</body>
+
+</html>

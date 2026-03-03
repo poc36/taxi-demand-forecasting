@@ -1,0 +1,13 @@
+pandas
+numpy
+lightgbm
+scikit-learn
+fastapi
+uvicorn
+plotly
+matplotlib
+seaborn
+jinja2
+optuna
+prophet
+cmdstanpy

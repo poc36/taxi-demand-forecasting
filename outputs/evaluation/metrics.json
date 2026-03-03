@@ -1,0 +1,272 @@
+{
+  "lgbm_overall": {
+    "mae": 7.84,
+    "mape": 38.3
+  },
+  "prophet_overall": {
+    "mae": 37.28,
+    "mape": 295.8
+  },
+  "per_zone": [
+    {
+      "zone_id": 1,
+      "zone_name": "Центр-Кремль",
+      "zone_type": "center",
+      "lgbm": {
+        "mae": 15.52,
+        "mape": 7.8
+      },
+      "prophet": {
+        "mae": 120.86,
+        "mape": 78.8
+      }
+    },
+    {
+      "zone_id": 2,
+      "zone_name": "Центр-Арбат",
+      "zone_type": "center",
+      "lgbm": {
+        "mae": 16.14,
+        "mape": 8.3
+      },
+      "prophet": {
+        "mae": 118.82,
+        "mape": 79.1
+      }
+    },
+    {
+      "zone_id": 3,
+      "zone_name": "Москва-Сити",
+      "zone_type": "business",
+      "lgbm": {
+        "mae": 6.69,
+        "mape": 19.1
+      },
+      "prophet": {
+        "mae": 21.08,
+        "mape": 60.4
+      }
+    },
+    {
+      "zone_id": 4,
+      "zone_name": "Тверская",
+      "zone_type": "business",
+      "lgbm": {
+        "mae": 2.69,
+        "mape": 21.1
+      },
+      "prophet": {
+        "mae": 8.27,
+        "mape": 63.6
+      }
+    },
+    {
+      "zone_id": 5,
+      "zone_name": "Хамовники",
+      "zone_type": "residential",
+      "lgbm": {
+        "mae": 6.51,
+        "mape": 21.3
+      },
+      "prophet": {
+        "mae": 24.43,
+        "mape": 97.9
+      }
+    },
+    {
+      "zone_id": 6,
+      "zone_name": "Замоскворечье",
+      "zone_type": "residential",
+      "lgbm": {
+        "mae": 7.19,
+        "mape": 26.4
+      },
+      "prophet": {
+        "mae": 26.65,
+        "mape": 117.5
+      }
+    },
+    {
+      "zone_id": 7,
+      "zone_name": "Таганка",
+      "zone_type": "residential",
+      "lgbm": {
+        "mae": 1.08,
+        "mape": 26.3
+      },
+      "prophet": {
+        "mae": 3.46,
+        "mape": 100.4
+      }
+    },
+    {
+      "zone_id": 8,
+      "zone_name": "Пресня",
+      "zone_type": "residential",
+      "lgbm": {
+        "mae": 7.14,
+        "mape": 28.6
+      },
+      "prophet": {
+        "mae": 26.62,
+        "mape": 122.6
+      }
+    },
+    {
+      "zone_id": 9,
+      "zone_name": "Сокольники",
+      "zone_type": "residential",
+      "lgbm": {
+        "mae": 1.23,
+        "mape": 21.2
+      },
+      "prophet": {
+        "mae": 4.13,
+        "mape": 92.8
+      }
+    },
+    {
+      "zone_id": 10,
+      "zone_name": "Марьино",
+      "zone_type": "suburb",
+      "lgbm": {
+        "mae": 3.28,
+        "mape": 54.8
+      },
+      "prophet": {
+        "mae": 11.32,
+        "mape": 243.9
+      }
+    },
+    {
+      "zone_id": 11,
+      "zone_name": "Бутово",
+      "zone_type": "suburb",
+      "lgbm": {
+        "mae": 5.54,
+        "mape": 64.2
+      },
+      "prophet": {
+        "mae": 18.14,
+        "mape": 258.5
+      }
+    },
+    {
+      "zone_id": 12,
+      "zone_name": "Митино",
+      "zone_type": "suburb",
+      "lgbm": {
+        "mae": 4.46,
+        "mape": 56.0
+      },
+      "prophet": {
+        "mae": 15.36,
+        "mape": 221.3
+      }
+    },
+    {
+      "zone_id": 13,
+      "zone_name": "Жулебино",
+      "zone_type": "suburb",
+      "lgbm": {
+        "mae": 4.52,
+        "mape": 55.1
+      },
+      "prophet": {
+        "mae": 15.47,
+        "mape": 249.7
+      }
+    },
+    {
+      "zone_id": 14,
+      "zone_name": "Солнцево",
+      "zone_type": "suburb",
+      "lgbm": {
+        "mae": 1.82,
+        "mape": 40.4
+      },
+      "prophet": {
+        "mae": 5.87,
+        "mape": 162.6
+      }
+    },
+    {
+      "zone_id": 15,
+      "zone_name": "Шереметьево",
+      "zone_type": "airport",
+      "lgbm": {
+        "mae": 9.01,
+        "mape": 14.0
+      },
+      "prophet": {
+        "mae": 18.97,
+        "mape": 34.3
+      }
+    },
+    {
+      "zone_id": 16,
+      "zone_name": "Домодедово",
+      "zone_type": "airport",
+      "lgbm": {
+        "mae": 15.22,
+        "mape": 13.6
+      },
+      "prophet": {
+        "mae": 34.11,
+        "mape": 35.6
+      }
+    },
+    {
+      "zone_id": 17,
+      "zone_name": "Внуково",
+      "zone_type": "airport",
+      "lgbm": {
+        "mae": 11.65,
+        "mape": 13.7
+      },
+      "prophet": {
+        "mae": 25.48,
+        "mape": 34.7
+      }
+    },
+    {
+      "zone_id": 18,
+      "zone_name": "Ленинградский вокзал",
+      "zone_type": "station",
+      "lgbm": {
+        "mae": 15.74,
+        "mape": 108.4
+      },
+      "prophet": {
+        "mae": 104.52,
+        "mape": 1420.5
+      }
+    },
+    {
+      "zone_id": 19,
+      "zone_name": "Казанский вокзал",
+      "zone_type": "station",
+      "lgbm": {
+        "mae": 5.26,
+        "mape": 50.3
+      },
+      "prophet": {
+        "mae": 33.14,
+        "mape": 708.5
+      }
+    },
+    {
+      "zone_id": 20,
+      "zone_name": "Курский вокзал",
+      "zone_type": "station",
+      "lgbm": {
+        "mae": 16.16,
+        "mape": 116.2
+      },
+      "prophet": {
+        "mae": 108.92,
+        "mape": 1733.3
+      }
+    }
+  ]
+}
